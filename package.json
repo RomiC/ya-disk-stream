@@ -7,6 +7,23 @@
   "author": "Roman Charugin <i@charugin.ru>",
   "license": "MIT",
   "dependencies": {
+    "ava": "^0.19.1",
+    "sinon": "^2.3.4",
     "ya-disk": "^1.1.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.5.2"
+  },
+  "scripts": {
+    "example": "babel-node",
+    "codecov": "exit 0",
+    "test": "ava"
+  },
+  "ava": {
+    "files": [
+      "tests/*.spec.js"
+    ],
+    "failWithoutAssertions": true
   }
 }
