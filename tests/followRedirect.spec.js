@@ -21,7 +21,7 @@ const lastResponse = {
 };
 
 test.cb('it should follow redirects', (t) => {
-  const httpsRequest = stub(https, 'request').callsFake(({ href }, cb) => {
+  const httpRequestStub = stub(https, 'request').callsFake(({ href }, cb) => {
     let redirectUrl = null;
 
     switch (href) {
@@ -40,10 +40,10 @@ test.cb('it should follow redirects', (t) => {
   });
 
   const finalCallback = stub().callsFake((args) => {
-    t.true(httpsRequest.calledThrice, 'https.request should called exact 3 times');
-    t.is(httpsRequest.firstCall.args[0].href, originalUrl, `should call https.request with \'${originalUrl}\' first time`);
-    t.is(httpsRequest.secondCall.args[0].href, firstRedirectUrl, `should call https.request with \'${firstRedirectUrl}\' second time`);
-    t.is(httpsRequest.thirdCall.args[0].href, secondRedirectUrl, `should call https.request with \'${secondRedirectUrl}\' third time`);
+    t.true(httpRequestStub.calledThrice, 'https.request should called exact 3 times');
+    t.is(httpRequestStub.firstCall.args[0].href, originalUrl, `should call https.request with \'${originalUrl}\' first time`);
+    t.is(httpRequestStub.secondCall.args[0].href, firstRedirectUrl, `should call https.request with \'${firstRedirectUrl}\' second time`);
+    t.is(httpRequestStub.thirdCall.args[0].href, secondRedirectUrl, `should call https.request with \'${secondRedirectUrl}\' third time`);
     t.is(args, lastResponse, 'callback should be fired with correct params');
     t.end();
   });
