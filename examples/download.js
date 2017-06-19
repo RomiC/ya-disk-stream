@@ -1,8 +1,8 @@
-const fs = require('fs');
+import fs from 'fs';
 
-const downloadStream = require('../lib/download');
+import { download } from '../index';
 
-const API_TOKEN = 'AQAAAAAbX24dAARco6CIrFDsfUXupTjn9ogeowA';
+const API_TOKEN = '';
 const fileToSave = fs.createWriteStream('./Mountains.jpg');
 
-downloadStream(API_TOKEN, 'disk:/Горы.jpg', (download) => download.pipe(fileToSave));
+download(API_TOKEN, 'disk:/Горы.jpg', (download) => download.pipe(fileToSave));

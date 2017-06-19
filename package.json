@@ -7,19 +7,23 @@
   "author": "Roman Charugin <i@charugin.ru>",
   "license": "MIT",
   "dependencies": {
-    "ava": "^0.19.1",
-    "sinon": "^2.3.4",
     "ya-disk": "^1.1.2"
   },
   "devDependencies": {
+    "ava": "^0.19.1",
     "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.5.2",
-    "proxyquire": "^1.8.0"
+    "nyc": "^11.0.2",
+    "proxyquire": "^1.8.0",
+    "sinon": "^2.3.4"
   },
   "scripts": {
     "example": "babel-node",
     "codecov": "exit 0",
-    "test": "ava"
+    "test": "nyc ava tests/*.test.js",
+    "test:watch": "ava --watch tests/*.test.js",
+    "test:debug": "node --inspect node_modules/ava/profile.js",
+    "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7"
   },
   "ava": {
     "files": [

@@ -1,12 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-const uploadStream = require('../lib/upload');
+import { upload } from '../index';
 
-const API_TOKEN = 'AQAAAAAbX24dAARco6CIrFDsfUXupTjn9ogeowA';
+const API_TOKEN = '';
 const fileToUpload = fs.createReadStream(path.join(__dirname, 'upload.js'));
 
-uploadStream(
+upload(
   API_TOKEN,
   'disk:/upload.js',
   true,
