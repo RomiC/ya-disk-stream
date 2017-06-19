@@ -8,5 +8,27 @@
   "license": "MIT",
   "dependencies": {
     "ya-disk": "^1.1.2"
+  },
+  "devDependencies": {
+    "ava": "^0.19.1",
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.5.2",
+    "nyc": "^11.0.2",
+    "proxyquire": "^1.8.0",
+    "sinon": "^2.3.4"
+  },
+  "scripts": {
+    "example": "babel-node",
+    "codecov": "exit 0",
+    "test": "nyc ava tests/*.spec.js",
+    "test:watch": "ava --watch tests/*.spec.js",
+    "test:debug": "node --inspect node_modules/ava/profile.js",
+    "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7"
+  },
+  "ava": {
+    "files": [
+      "tests/*.spec.js"
+    ],
+    "failWithoutAssertions": true
   }
 }

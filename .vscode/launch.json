@@ -6,9 +6,24 @@
   "configurations": [
     {
       "type": "node",
+      "request": "attach",
+      "name": "Attach",
+      "port": 5858
+    },
+    {
+      "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceRoot}/tests/download.js"
+      "program": "${workspaceRoot}/examples/upload.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run AVA test",
+      "program": "${workspaceRoot}/node_modules/ava/profile.js",
+      "args": [
+        "${file}"
+      ]
     }
   ]
 }
