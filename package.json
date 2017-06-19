@@ -20,8 +20,8 @@
   "scripts": {
     "example": "babel-node",
     "codecov": "exit 0",
-    "test": "nyc ava tests/*.test.js",
-    "test:watch": "ava --watch tests/*.test.js",
+    "test": "nyc ava tests/*.spec.js",
+    "test:watch": "ava --watch tests/*.spec.js",
     "test:debug": "node --inspect node_modules/ava/profile.js",
     "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7"
   },
