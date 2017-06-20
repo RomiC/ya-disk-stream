@@ -1,6 +1,6 @@
 import test from 'ava';
 import https from 'https';
-import { stub, spy } from 'sinon';
+import { stub } from 'sinon';
 
 import followRedirect from '../lib/followRedirect';
 
