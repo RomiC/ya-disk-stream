@@ -8,7 +8,6 @@ const originalUrl = 'https://yandex.ru/';
 const firstRedirectUrl = 'https://bing.com/';
 const secondRedirectUrl = 'https://google.com/';
 
-const httpClientMock = { end: () => {} };
 const redirectResponse = (url) => ({
   statusCode: 302,
   headers: {
@@ -41,9 +40,9 @@ test.cb('it should follow redirects', (t) => {
 
   const finalCallback = stub().callsFake((args) => {
     t.true(httpRequestStub.calledThrice, 'https.request should called exact 3 times');
-    t.is(httpRequestStub.firstCall.args[0].href, originalUrl, `should call https.request with \'${originalUrl}\' first time`);
-    t.is(httpRequestStub.secondCall.args[0].href, firstRedirectUrl, `should call https.request with \'${firstRedirectUrl}\' second time`);
-    t.is(httpRequestStub.thirdCall.args[0].href, secondRedirectUrl, `should call https.request with \'${secondRedirectUrl}\' third time`);
+    t.is(httpRequestStub.firstCall.args[0].href, originalUrl, `should call https.request with '${originalUrl}' first time`);
+    t.is(httpRequestStub.secondCall.args[0].href, firstRedirectUrl, `should call https.request with '${firstRedirectUrl}' second time`);
+    t.is(httpRequestStub.thirdCall.args[0].href, secondRedirectUrl, `should call https.request with '${secondRedirectUrl}' third time`);
     t.is(args, lastResponse, 'callback should be fired with correct params');
     t.end();
   });

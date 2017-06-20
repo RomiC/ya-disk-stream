@@ -14,6 +14,9 @@
     "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.5.2",
     "codecov": "^2.2.0",
+    "eslint": "^4.0.0",
+    "husky": "^0.13.4",
+    "lint-staged": "^4.0.0",
     "nyc": "^11.0.2",
     "proxyquire": "^1.8.0",
     "sinon": "^2.3.4"
@@ -23,12 +26,16 @@
     "test": "nyc ava tests/*.spec.js",
     "test:watch": "ava --watch tests/*.spec.js",
     "test:debug": "node --inspect node_modules/ava/profile.js",
-    "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7"
+    "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7",
+    "precommit": "lint-staged"
   },
   "ava": {
     "files": [
       "tests/*.spec.js"
     ],
     "failWithoutAssertions": true
+  },
+  "lint-staged": {
+    "*.js": ["eslint --fix", "git add"]
   }
 }

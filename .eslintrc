@@ -8,6 +8,7 @@
   ],
   "rules": {
     "comma-spacing": ["warn"],
+    "eol-last": ["warn", "never"],
     "indent": ["warn", 2, {"SwitchCase": 1}],
     "key-spacing": ["warn", {
       "beforeColon": false,
@@ -15,6 +16,7 @@
     }],
     "keyword-spacing": ["warn", {"after": true}],
     "no-extra-boolean-cast": "off",
+    "no-multiple-empty-lines": ["warn", {"max": 1}],
     "no-multi-spaces": "warn",
     "no-spaced-func": "warn",
     "no-unused-vars": "warn",
