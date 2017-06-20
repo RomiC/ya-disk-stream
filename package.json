@@ -13,13 +13,13 @@
     "ava": "^0.19.1",
     "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.5.2",
+    "codecov": "^2.2.0",
     "nyc": "^11.0.2",
     "proxyquire": "^1.8.0",
     "sinon": "^2.3.4"
   },
   "scripts": {
     "example": "babel-node",
-    "codecov": "exit 0",
     "test": "nyc ava tests/*.spec.js",
     "test:watch": "ava --watch tests/*.spec.js",
     "test:debug": "node --inspect node_modules/ava/profile.js",
