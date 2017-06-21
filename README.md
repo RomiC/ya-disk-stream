@@ -12,7 +12,7 @@ Each method requires an OAuth token. You can receive one manually or use one of 
 
 Creates readable stream for downloading file from Yandex.Disk.
 
-```
+```js
 import fs from 'fs';
 
 import { download } from 'ya-disk-stream';
@@ -27,7 +27,7 @@ downloadStream(API_TOKEN, 'disk:/Горы.jpg', (download) => download.pipe(file
 
 Creates writable stream for uploading file to Yandex.Disk.
 
-```
+```js
 import fs from 'fs';
 import path from 'path';
 
