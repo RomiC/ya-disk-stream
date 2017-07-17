@@ -1,5 +1,7 @@
 # ya-disk-stream [![Build Status](https://travis-ci.org/RomiC/ya-disk-stream.svg?branch=master)](https://travis-ci.org/RomiC/ya-disk-stream) [![codecov](https://codecov.io/gh/RomiC/ya-disk-stream/branch/master/graph/badge.svg)](https://codecov.io/gh/RomiC/ya-disk-stream)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/RomiC/ya-disk-stream.svg)](https://greenkeeper.io/)
+
 Create readable and writable streams for downloading and uploading files to Yandex.Disk.
 
 ## Authorization
