@@ -6,3 +6,5 @@ git:
   depth: 3
 after_success:
 - yarn run coverage
+script:
+- yarn run test:ci
