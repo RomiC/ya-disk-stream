@@ -1,7 +1,5 @@
 import test from 'ava';
-import fs from 'fs';
 import https from 'https';
-import path from 'path';
 import { stub } from 'sinon';
 import { Writable } from 'stream';
 import { parse as urlParse } from 'url';
@@ -35,7 +33,7 @@ test.serial.cb('it should call upload.link with correct params and fire onReady 
   const yaUploadLinkStub = stub(yaUpload, 'link').callsArgWithAsync(3, uploadLinkResponseMock);
   const httpsRequestStub = stub(https, 'request').returns(httpsResponseMock);
 
-  const onReadyStub = stub().callsFake((arg) => {
+  const onReadyStub = stub().callsFake(() => {
     t.true(yaUploadLinkStub.calledWith(token, file, overwrite), 'should call call download.link with correct params');
     t.true(httpsRequestStub.calledWith(httpsRequestParamsMock), 'should fire https.request with correct params');
     t.true(onReadyStub.calledWith(httpsResponseMock), 'should fire onReady callback with correct param');

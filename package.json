@@ -27,6 +27,8 @@
     "test:ci": "nyc npm test",
     "test:watch": "npm test -- --watch",
     "test:debug": "node --inspect node_modules/ava/profile.js",
+    "lint": "eslint --max-warnings 0 ./",
+    "lint:fix": "npm run lint -- --fix",
     "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7",
     "precommit": "lint-staged",
     "prepush": "npm test"
@@ -38,6 +40,6 @@
     "failWithoutAssertions": true
   },
   "lint-staged": {
-    "*.js": ["eslint --fix", "git add"]
+    "*.js": ["npm run lint:fix", "git add"]
   }
 }
