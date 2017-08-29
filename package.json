@@ -10,12 +10,12 @@
     "ya-disk": "^1.1.2"
   },
   "devDependencies": {
-    "ava": "^0.19.1",
+    "ava": "^0.21.0",
     "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.5.2",
     "codecov": "^2.2.0",
     "eslint": "^4.0.0",
-    "husky": "^0.13.4",
+    "husky": "^0.14.3",
     "lint-staged": "^4.0.0",
     "nyc": "^11.0.2",
     "proxyquire": "^1.8.0",
@@ -23,11 +23,15 @@
   },
   "scripts": {
     "example": "babel-node",
-    "test": "nyc ava tests/*.spec.js",
-    "test:watch": "ava --watch tests/*.spec.js",
+    "test": "ava tests/*.spec.js",
+    "test:ci": "nyc npm test",
+    "test:watch": "npm test -- --watch",
     "test:debug": "node --inspect node_modules/ava/profile.js",
+    "lint": "eslint --max-warnings 0 ./",
+    "lint:fix": "npm run lint -- --fix",
     "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "prepush": "npm test"
   },
   "ava": {
     "files": [
@@ -36,6 +40,6 @@
     "failWithoutAssertions": true
   },
   "lint-staged": {
-    "*.js": ["eslint --fix", "git add"]
+    "*.js": ["npm run lint:fix", "git add"]
   }
 }

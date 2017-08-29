@@ -25,7 +25,7 @@ test.afterEach(() => {
 test.serial.cb('it should call download.link with correct params and fire onReady callback in case of success', (t) => {
   const yaDownloadLinkStub = stub(yaDownload, 'link').callsArgWithAsync(2, readableStream);
 
-  const onReadyStub = stub().callsFake((arg) => {
+  const onReadyStub = stub().callsFake(() => {
     t.true(yaDownloadLinkStub.calledWith(token, file), 'should call call download.link with correct params');
     t.true(onReadyStub.calledWith(readableStream), 'should fire onReady callback with correct param');
     t.end();
@@ -36,7 +36,7 @@ test.serial.cb('it should call download.link with correct params and fire onRead
 
 test.serial.cb('it should fire the onError callback in case of error', (t) => {
   const err = new Error('error message');
-  const yaDownloadLinkStub = stub(yaDownload, 'link').callsArgWithAsync(3, err);
+  stub(yaDownload, 'link').callsArgWithAsync(3, err);
 
   const onErrorStub = stub().callsFake(() => {
     t.true(onErrorStub.calledWithExactly(err), 'should fire onError callback with error object');
