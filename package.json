@@ -1,7 +1,8 @@
 {
   "name": "ya-disk-stream",
   "version": "1.0.0",
-  "description": "Readable and writable streams for uploading/downloading files from Yandex.Disk",
+  "description":
+    "Readable and writable streams for uploading/downloading files from Yandex.Disk",
   "main": "index.js",
   "repository": "git@github.com:RomiC/ya-disk-stream.git",
   "author": "Roman Charugin <i@charugin.ru>",
@@ -27,16 +28,15 @@
     "test:ci": "nyc npm test",
     "test:watch": "npm test -- --watch",
     "test:debug": "node --inspect node_modules/ava/profile.js",
-    "lint": "eslint --max-warnings 0 ./",
+    "lint": "eslint --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
-    "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7",
+    "coverage":
+      "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7",
     "precommit": "lint-staged",
     "prepush": "npm test"
   },
   "ava": {
-    "files": [
-      "tests/*.spec.js"
-    ],
+    "files": ["tests/*.spec.js"],
     "failWithoutAssertions": true
   },
   "lint-staged": {
