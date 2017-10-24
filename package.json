@@ -11,7 +11,7 @@
     "ya-disk": "^1.1.2"
   },
   "devDependencies": {
-    "ava": "^0.21.0",
+    "ava": "^0.23.0",
     "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.5.2",
     "codecov": "^2.2.0",
