@@ -20,7 +20,7 @@
     "lint-staged": "^5.0.0",
     "nyc": "^11.0.2",
     "proxyquire": "^2.0.1",
-    "sinon": "^3.3.0"
+    "sinon": "^5.0.3"
   },
   "scripts": {
     "example": "babel-node",
