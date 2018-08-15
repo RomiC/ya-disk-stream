@@ -3,7 +3,6 @@ node_js:
 - node
 - 8
 - 6
-cache: yarn
 git:
   depth: 3
 after_success:
