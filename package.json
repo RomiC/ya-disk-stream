@@ -1,21 +1,26 @@
 {
   "name": "ya-disk-stream",
   "version": "1.0.0",
-  "description":
-    "Readable and writable streams for uploading/downloading files from Yandex.Disk",
+  "description": "Readable and writable streams for uploading/downloading files from Yandex.Disk",
   "main": "index.js",
   "repository": "git@github.com:RomiC/ya-disk-stream.git",
   "author": "Roman Charugin <i@charugin.ru>",
   "license": "MIT",
+  "engines": {
+    "node": ">= 6.4.0"
+  },
   "dependencies": {
     "ya-disk": "^1.1.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-rc.1",
+    "@babel/node": "^7.0.0-rc.1",
+    "@babel/preset-env": "^7.0.0-rc.1",
     "ava": "^0.25.0",
-    "babel-cli": "^6.24.1",
-    "babel-preset-env": "^1.5.2",
     "codecov": "^3.0.1",
     "eslint": "^5.0.1",
+    "eslint-config-prettier": "^3.0.1",
+    "eslint-plugin-prettier": "^2.6.2",
     "husky": "^0.14.3",
     "lint-staged": "^7.1.2",
     "nyc": "^12.0.2",
@@ -30,16 +35,20 @@
     "test:debug": "node --inspect node_modules/ava/profile.js",
     "lint": "eslint --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
-    "coverage":
-      "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7",
+    "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7",
     "precommit": "lint-staged",
     "prepush": "npm test"
   },
   "ava": {
-    "files": ["tests/*.spec.js"],
+    "files": [
+      "tests/*.spec.js"
+    ],
     "failWithoutAssertions": true
   },
   "lint-staged": {
-    "*.js": ["npm run lint:fix", "git add"]
+    "*.js": [
+      "npm run lint:fix",
+      "git add"
+    ]
   }
 }
