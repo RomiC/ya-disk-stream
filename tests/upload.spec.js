@@ -35,7 +35,7 @@ test.serial.cb('it should call upload.link with correct params and fire onReady 
 
   const onReadyStub = stub().callsFake(() => {
     t.true(yaUploadLinkStub.calledWith(token, file, overwrite), 'should call call download.link with correct params');
-    t.true(httpsRequestStub.calledWith(httpsRequestParamsMock), 'should fire https.request with correct params');
+    t.true(httpsRequestStub.calledWithMatch(httpsRequestParamsMock), 'should fire https.request with correct params');
     t.true(onReadyStub.calledWith(httpsResponseMock), 'should fire onReady callback with correct param');
     t.end();
   });
