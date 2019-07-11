@@ -10,7 +10,7 @@
     "node": ">= 8.9.0"
   },
   "dependencies": {
-    "ya-disk": "^1.1.2"
+    "ya-disk": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-rc.1",
