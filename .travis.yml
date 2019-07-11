@@ -1,14 +1,13 @@
 language: node_js
 node_js:
-- node
-- 8
-- 6
+  - node
+  - 8
 git:
   depth: 3
 after_success:
-- yarn run coverage
+  - yarn run coverage
 script:
-- yarn run test:ci
+  - yarn run test:ci
 deploy:
   provider: npm
   email: i@charugin.ru
