@@ -22,7 +22,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "husky": "^4.0.2",
     "jest": "^25.1.0",
-    "lint-staged": "^9.0.0",
+    "lint-staged": "^10.0.3",
     "prettier": "^1.19.1"
   },
   "scripts": {
