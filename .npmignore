@@ -1,5 +1,7 @@
 examples
 tests
+__mocks__
+lib/__mocks__
 .babelrc
 .editorconfig
 .eslintrc

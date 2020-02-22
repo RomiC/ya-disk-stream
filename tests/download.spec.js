@@ -1,47 +1,56 @@
-import test from 'ava';
-import fs from 'fs';
-import path from 'path';
-import proxyquire from 'proxyquire';
-import { stub } from 'sinon';
-import { download as yaDownload } from 'ya-disk';
+const fs = require('fs');
+const path = require('path');
+const yaDisk = require('ya-disk');
+
+const download = require('../lib/download');
+const followRedirect = require('../lib/followRedirect');
+
+jest.mock('ya-disk');
+jest.mock('../lib/followRedirect');
 
 const token = 'it-is-just-a-token-sample';
 const file = 'disk:/file.txt';
-const nopeFn = () => {};
+const downloadLink = 'https://disk.yandex.ru/download';
+const downloadMethod = 'GET';
+const onReadyCallback = jest.fn();
+const onErrorCallback = jest.fn();
 
-const readableStream = fs.createReadStream(path.join(__dirname, '..', 'package.json'));
+const readableStream = fs.createReadStream(
+  path.join(__dirname, '..', 'package.json')
+);
 
-const followRedirectStub = stub().callsArgWithAsync(2, readableStream);
-const download = proxyquire('../lib/download', {
-  './followRedirect': followRedirectStub
-});
+test('it should call download.link with correct params and fire onReady callback in case of success', () => {
+  download(token, file, onReadyCallback);
 
-test.afterEach(() => {
-  if (typeof yaDownload.link.restore === 'function') {
-    yaDownload.link.restore();
-  }
-});
+  expect(yaDisk.download.link).toHaveBeenCalledWith(
+    token,
+    file,
+    expect.any(Function),
+    undefined
+  );
 
-test.serial.cb('it should call download.link with correct params and fire onReady callback in case of success', (t) => {
-  const yaDownloadLinkStub = stub(yaDownload, 'link').callsArgWithAsync(2, readableStream);
-
-  const onReadyStub = stub().callsFake(() => {
-    t.true(yaDownloadLinkStub.calledWith(token, file), 'should call call download.link with correct params');
-    t.true(onReadyStub.calledWith(readableStream), 'should fire onReady callback with correct param');
-    t.end();
+  yaDisk.download.link._onSuccessCallback({
+    href: downloadLink,
+    method: downloadMethod
   });
 
-  download(token, file, onReadyStub, nopeFn);
+  expect(followRedirect).toHaveBeenCalledWith(
+    downloadLink,
+    downloadMethod,
+    expect.any(Function)
+  );
+
+  followRedirect._onReady(readableStream);
+
+  expect(onReadyCallback).toHaveBeenCalledWith(readableStream);
 });
 
-test.serial.cb('it should fire the onError callback in case of error', (t) => {
-  const err = new Error('error message');
-  stub(yaDownload, 'link').callsArgWithAsync(3, err);
+test('it should fire the onError callback in case of error', () => {
+  const error = new Error('error message');
 
-  const onErrorStub = stub().callsFake(() => {
-    t.true(onErrorStub.calledWithExactly(err), 'should fire onError callback with error object');
-    t.end();
-  });
+  download(token, file, onReadyCallback, onErrorCallback);
 
-  download(token, file, nopeFn, onErrorStub);
+  yaDisk.download.link._onErrorCallback(error);
+
+  expect(onErrorCallback).toHaveBeenCalledWith(error);
 });

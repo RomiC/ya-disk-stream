@@ -19,11 +19,15 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run AVA test",
-      "program": "${workspaceRoot}/node_modules/ava/profile.js",
-      "args": [
-        "${file}"
-      ]
+      "name": "Jest Current File",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["--no-coverage", "${relativeFile}"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true,
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+      }
     }
   ]
 }

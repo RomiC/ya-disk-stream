@@ -7,7 +7,7 @@
   "author": "Roman Charugin <i@charugin.ru>",
   "license": "MIT",
   "engines": {
-    "node": ">= 8.9.0"
+    "node": ">= 10.13.0"
   },
   "dependencies": {
     "ya-disk": "^2.0.0"
@@ -16,40 +16,32 @@
     "@babel/core": "^7.0.0-rc.1",
     "@babel/node": "^7.0.0-rc.1",
     "@babel/preset-env": "^7.0.0-rc.1",
-    "ava": "^2.0.0",
     "codecov": "^3.0.1",
     "eslint": "^6.0.0",
     "eslint-config-prettier": "^6.1.0",
     "eslint-plugin-prettier": "^3.0.1",
     "husky": "^4.0.2",
+    "jest": "^25.1.0",
     "lint-staged": "^9.0.0",
-    "nyc": "^15.0.0",
-    "prettier": "^1.17.0",
-    "proxyquire": "^2.0.1",
-    "sinon": "^8.0.0"
+    "prettier": "^1.19.1"
   },
   "scripts": {
     "example": "babel-node",
-    "test": "ava tests/*.spec.js",
-    "test:ci": "nyc npm test",
-    "test:watch": "npm test -- --watch",
-    "test:debug": "node --inspect node_modules/ava/profile.js",
+    "test": "jest --no-cache",
     "lint": "eslint --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
-    "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov --token=2b70b92f-f39e-4a17-90fa-47b8449573f7",
-    "precommit": "lint-staged",
-    "prepush": "npm test"
-  },
-  "ava": {
-    "files": [
-      "tests/*.spec.js"
-    ],
-    "failWithoutAssertions": true
+    "coverage": "codecov --clear --token=2b70b92f-f39e-4a17-90fa-47b8449573f7"
   },
   "lint-staged": {
     "*.js": [
       "npm run lint:fix",
       "git add"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm test"
+    }
   }
 }
