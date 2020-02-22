@@ -33,10 +33,7 @@
     "coverage": "codecov --clear --token=2b70b92f-f39e-4a17-90fa-47b8449573f7"
   },
   "lint-staged": {
-    "*.js": [
-      "npm run lint:fix",
-      "git add"
-    ]
+    "*.js": "npm run lint:fix"
   },
   "husky": {
     "hooks": {
