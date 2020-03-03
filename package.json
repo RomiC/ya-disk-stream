@@ -13,17 +13,17 @@
     "ya-disk": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0-rc.1",
-    "@babel/node": "^7.0.0-rc.1",
-    "@babel/preset-env": "^7.0.0-rc.1",
+    "@babel/core": "7.6.0",
+    "@babel/node": "7.6.1",
+    "@babel/preset-env": "7.6.0",
     "codecov": "^3.0.1",
-    "eslint": "^6.0.0",
-    "eslint-config-prettier": "^6.1.0",
-    "eslint-plugin-prettier": "^3.0.1",
-    "husky": "^4.0.2",
-    "jest": "^25.1.0",
-    "lint-staged": "^10.0.3",
-    "prettier": "^1.19.1"
+    "eslint": "6.3.0",
+    "eslint-config-prettier": "6.3.0",
+    "eslint-plugin-prettier": "3.1.0",
+    "husky": "4.0.3",
+    "jest": "25.1.0",
+    "lint-staged": "10.0.7",
+    "prettier": "1.19.1"
   },
   "scripts": {
     "example": "babel-node",
