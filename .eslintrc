@@ -7,7 +7,7 @@
   "rules": {
     "arrow-parens": ["warn", "always"],
     "comma-spacing": ["warn"],
-    "eol-last": ["warn", "never"],
+    "eol-last": ["warn", "always"],
     "indent": ["warn", 2, { "SwitchCase": 1 }],
     "key-spacing": [
       "warn",
@@ -23,6 +23,7 @@
     "no-spaced-func": "warn",
     "no-unused-vars": "warn",
     "object-curly-spacing": ["warn", "always"],
+    "prettier/prettier": "warn",
     "semi": ["warn", "always"],
     "space-before-blocks": ["warn", "always"],
     "space-before-function-paren": ["warn", "never"],

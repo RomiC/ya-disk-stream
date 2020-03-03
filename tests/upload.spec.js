@@ -1,56 +1,50 @@
-import test from 'ava';
-import https from 'https';
-import { stub } from 'sinon';
-import { Writable } from 'stream';
-import { parse as urlParse } from 'url';
+const https = require('https');
+const { parse: urlParse } = require('url');
+const yaDisk = require('ya-disk');
+const upload = require('../lib/upload');
 
-import { upload as yaUpload } from 'ya-disk';
-
-import upload from '../lib/upload';
+jest.mock('https');
+jest.mock('ya-disk');
 
 const token = 'it-is-just-a-token-sample';
 const file = 'disk:/file.txt';
 const overwrite = false;
-const nopeFn = () => {};
 
 const uploadLinkResponseMock = {
   href: 'https://example.com/',
   method: 'PUT'
 };
-const httpsRequestParamsMock = Object.assign(urlParse(uploadLinkResponseMock.href), { method: uploadLinkResponseMock.method });
-const httpsResponseMock = new Writable();
+const httpsRequestParamsMock = Object.assign(
+  urlParse(uploadLinkResponseMock.href),
+  { method: uploadLinkResponseMock.method }
+);
 
-test.afterEach(() => {
-  if (typeof yaUpload.link.restore === 'function') {
-    yaUpload.link.restore();
-  }
-  if (typeof https.request.restore === 'function') {
-    https.request.restore();
-  }
+test('it should call upload.link with correct params and fire onReady callback in case of success', () => {
+  const onReadyMock = jest.fn();
+
+  upload(token, file, overwrite, onReadyMock);
+
+  expect(yaDisk.upload.link).toHaveBeenLastCalledWith(
+    token,
+    file,
+    overwrite,
+    expect.any(Function),
+    undefined
+  );
+
+  yaDisk.upload.link._onSuccessCallback(uploadLinkResponseMock);
+
+  expect(https.request).toHaveBeenCalledWith(httpsRequestParamsMock);
+  expect(onReadyMock).toHaveBeenCalledWith(expect.any(Object));
 });
 
-test.serial.cb('it should call upload.link with correct params and fire onReady callback in case of success', (t) => {
-  const yaUploadLinkStub = stub(yaUpload, 'link').callsArgWithAsync(3, uploadLinkResponseMock);
-  const httpsRequestStub = stub(https, 'request').returns(httpsResponseMock);
+test('it should fire the onError callback in case of error', () => {
+  const error = new Error('error message');
+  const onErrorMock = jest.fn();
 
-  const onReadyStub = stub().callsFake(() => {
-    t.true(yaUploadLinkStub.calledWith(token, file, overwrite), 'should call call download.link with correct params');
-    t.true(httpsRequestStub.calledWithMatch(httpsRequestParamsMock), 'should fire https.request with correct params');
-    t.true(onReadyStub.calledWith(httpsResponseMock), 'should fire onReady callback with correct param');
-    t.end();
-  });
+  upload(token, file, overwrite, undefined, onErrorMock);
 
-  upload(token, file, overwrite, onReadyStub, nopeFn);
-});
+  yaDisk.upload.link._onErrorCallback(error);
 
-test.serial.cb('it should fire the onError callback in case of error', (t) => {
-  const err = new Error('error message');
-  stub(yaUpload, 'link').callsArgWithAsync(4, err);
-
-  const onErrorStub = stub().callsFake(() => {
-    t.true(onErrorStub.calledWithExactly(err), 'should fire onError callback with error object');
-    t.end();
-  });
-
-  upload(token, file, overwrite, nopeFn, onErrorStub);
+  expect(onErrorMock).toHaveBeenCalledWith(error);
 });

@@ -1,12 +1,18 @@
-import test from 'ava';
-import https from 'https';
-import { stub } from 'sinon';
+const { parse: parseUrl } = require('url');
+const https = require('https');
+const followRedirect = require('../lib/followRedirect');
 
-import followRedirect from '../lib/followRedirect';
-
+const method = 'GET';
 const originalUrl = 'https://yandex.ru/';
+const originalParsedUrl = Object.assign({}, parseUrl(originalUrl), { method });
 const firstRedirectUrl = 'https://bing.com/';
+const firstRedirectParsedUrl = Object.assign({}, parseUrl(firstRedirectUrl), {
+  method
+});
 const secondRedirectUrl = 'https://google.com/';
+const secondRedirectParsedUrl = Object.assign({}, parseUrl(secondRedirectUrl), {
+  method
+});
 
 const redirectResponse = (url) => ({
   statusCode: 302,
@@ -16,36 +22,37 @@ const redirectResponse = (url) => ({
 });
 const lastResponse = {
   statusCode: 200,
-  data: 'finally you\'ve come'
+  data: "finally you've come"
 };
 
-test.cb('it should follow redirects', (t) => {
-  const httpRequestStub = stub(https, 'request').callsFake(({ href }, cb) => {
-    let redirectUrl = null;
+jest.mock('https');
 
-    switch (href) {
-      case originalUrl:
-        redirectUrl = firstRedirectUrl;
-        break;
+describe('basic functionality', () => {
+  it('it should follow redirects', () => {
+    const finalCallback = jest.fn();
 
-      case firstRedirectUrl:
-        redirectUrl = secondRedirectUrl;
-        break;
-    }
+    followRedirect(originalUrl, method, finalCallback);
+    expect(https.request).toHaveBeenCalledWith(
+      originalParsedUrl,
+      expect.any(Function)
+    );
 
-    setTimeout(() => cb(redirectUrl === null ? lastResponse : redirectResponse(redirectUrl)), 0);
+    https.request._requestCallback(redirectResponse(firstRedirectUrl));
 
-    return { end: () => {} };
+    expect(https.request).toHaveBeenCalledWith(
+      firstRedirectParsedUrl,
+      expect.any(Function)
+    );
+
+    https.request._requestCallback(redirectResponse(secondRedirectUrl));
+
+    expect(https.request).toHaveBeenCalledWith(
+      secondRedirectParsedUrl,
+      expect.any(Function)
+    );
+
+    https.request._requestCallback(lastResponse);
+
+    expect(finalCallback).toHaveBeenCalledWith(lastResponse);
   });
-
-  const finalCallback = stub().callsFake((args) => {
-    t.true(httpRequestStub.calledThrice, 'https.request should called exact 3 times');
-    t.is(httpRequestStub.firstCall.args[0].href, originalUrl, `should call https.request with '${originalUrl}' first time`);
-    t.is(httpRequestStub.secondCall.args[0].href, firstRedirectUrl, `should call https.request with '${firstRedirectUrl}' second time`);
-    t.is(httpRequestStub.thirdCall.args[0].href, secondRedirectUrl, `should call https.request with '${secondRedirectUrl}' third time`);
-    t.is(args, lastResponse, 'callback should be fired with correct params');
-    t.end();
-  });
-
-  followRedirect(originalUrl, 'GET', finalCallback);
 });
