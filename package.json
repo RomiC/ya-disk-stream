@@ -13,9 +13,9 @@
     "ya-disk": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/core": "7.6.0",
-    "@babel/node": "7.6.1",
-    "@babel/preset-env": "7.6.0",
+    "@babel/core": "7.8.7",
+    "@babel/node": "7.8.7",
+    "@babel/preset-env": "7.8.7",
     "codecov": "^3.0.1",
     "eslint": "6.3.0",
     "eslint-config-prettier": "6.3.0",
