@@ -28,7 +28,7 @@
   "scripts": {
     "example": "babel-node",
     "test": "jest --no-cache",
-    "lint": "eslint --max-warnings 0 ./lib ./__mocks__ ./tests",
+    "lint": "eslint --max-warnings 0 ./lib ./tests",
     "lint:fix": "npm run lint -- --fix",
     "coverage": "codecov --clear --token=2b70b92f-f39e-4a17-90fa-47b8449573f7"
   },

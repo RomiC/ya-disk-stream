@@ -1,8 +1,8 @@
 .babelrc
 .eslintrc
+.eslintignore
 .gitattributes
 .github
-.nyc_output
 .prettierrc
 .vscode
 *.tgz
@@ -11,4 +11,3 @@ examples
 jest.config.js
 lib/__mocks__
 node_modules
-tests
