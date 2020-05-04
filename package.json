@@ -13,15 +13,15 @@
     "ya-disk": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/core": "7.9.0",
+    "@babel/core": "7.9.6",
     "@babel/node": "7.8.7",
-    "@babel/preset-env": "7.9.5",
+    "@babel/preset-env": "7.9.6",
     "codecov": "3.6.5",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.11.0",
     "eslint-plugin-prettier": "3.1.3",
     "husky": "4.2.5",
-    "jest": "25.4.0",
+    "jest": "25.5.4",
     "lint-staged": "10.2.2",
     "prettier": "2.0.5"
   },
