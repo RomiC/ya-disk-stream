@@ -18,7 +18,6 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm ci
       - run: npm test
-      - run: npm run coverage
 
   publish-npm:
     needs: build

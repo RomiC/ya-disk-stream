@@ -3,6 +3,9 @@ name: Tests
 on:
   pull_request:
     types: [opened, edited, synchronize]
+  push:
+    branches:
+      - master
 
 jobs:
   test:
@@ -19,4 +22,18 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
-      - run: npm run coverage
+      - uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          flag-name: node v${{ matrix.node }}
+          parallel: true
+
+  finish:
+    needs: test
+    runs-on: ubuntu-latest
+    name: Publishing coverage report
+    steps:
+      - uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true

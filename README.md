@@ -1,4 +1,4 @@
-# ya-disk-stream [![Build Status](https://travis-ci.org/RomiC/ya-disk-stream.svg?branch=master)](https://travis-ci.org/RomiC/ya-disk-stream) [![codecov](https://codecov.io/gh/RomiC/ya-disk-stream/branch/master/graph/badge.svg)](https://codecov.io/gh/RomiC/ya-disk-stream)
+# ya-disk-stream [![Tests](https://github.com/RomiC/ya-disk-stream/workflows/Tests/badge.svg)](https://github.com/RomiC/ya-disk-stream/actions?query=workflow%3ATests) [![Coverage Status](https://coveralls.io/repos/github/RomiC/ya-disk-stream/badge.svg)](https://coveralls.io/github/RomiC/ya-disk-stream)
 
 Create readable and writable streams for downloading and uploading files to Yandex.Disk.
 
