@@ -40,11 +40,15 @@ module.exports = {
   // A list of paths to directories that Jest should use to search for files in
   roots: ['<rootDir>'],
 
+  slowTestThreshold: 10,
+
   // The test environment that will be used for testing
   testEnvironment: 'node',
 
   // The glob patterns Jest uses to detect test files
-  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
+  testMatch: ['**/?(*.)+(spec|feature).[tj]s?(x)'],
+
+  testTimeout: 30000,
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
   unmockedModulePathPatterns: []
