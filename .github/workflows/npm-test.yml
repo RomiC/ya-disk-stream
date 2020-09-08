@@ -21,7 +21,10 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm ci
       - run: npm run lint
-      - run: npm test
+      - id: running-tests
+        run: npm test
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
       - uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.github_token }}
