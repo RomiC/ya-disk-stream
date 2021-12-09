@@ -52,7 +52,9 @@ uploadStream(
 ### Integration (feature) tests
 
 By default feature tests aren't being run on git push. You should run the manually. In order to do that you need to create `.env` in the root of the project containing your `API_TOKEN`:
+
 ```
 API_TOKEN=19823jd92u8h3d78efya0s7fyhaiu23ghjhg
 ```
+
 After you may use `npm test` command to run all tests or `npm test -- features/*.feature.js` to run only feature tests.
