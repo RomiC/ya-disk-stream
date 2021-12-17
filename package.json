@@ -32,11 +32,5 @@
   },
   "lint-staged": {
     "*.js": "npm run lint:fix"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm test -- specs/*.spec.js"
-    }
   }
 }
