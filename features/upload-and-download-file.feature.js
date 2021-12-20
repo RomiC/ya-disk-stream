@@ -34,9 +34,9 @@ function checkRemoteFileSize(remoteFile, expectedSize, onSuccess) {
 }
 
 describe('uploading and downloading file', () => {
-  afterAll(() => {
+  afterAll((done) => {
     fs.unlinkSync(remoteFileName);
-    resources.remove(API_TOKEN, remoteFilePath, true);
+    resources.remove(API_TOKEN, remoteFilePath, true, done, done);
   });
 
   it('should upload file', (done) => {
