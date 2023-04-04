@@ -10,7 +10,7 @@
     "node": ">= 14"
   },
   "dependencies": {
-    "ya-disk": "^3.0.0"
+    "ya-disk": "^4.0.1"
   },
   "devDependencies": {
     "dotenv": "16.0.3",
