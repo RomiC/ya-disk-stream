@@ -1,32 +1,40 @@
 version: 2
 updates:
   # Maintain dependencies for GitHub Actions
-  - package-ecosystem: 'github-actions'
-    directory: '/'
-    schedule:
-      interval: 'daily'
+  - package-ecosystem: "github-actions"
     assignees:
-      - 'RomiC'
+      - "RomiC"
     commit-message:
-      prefix: '🆙 🛠️'
+      prefix: "🆙 🛠️"
+    directory: "/"
     labels:
-      - 'dependencies'
-      - 'dx'
+      - "dependencies"
+      - "dx"
+    open-pull-requests-limit: 10
     reviewers:
-      - 'RomiC'
+      - "RomiC"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "14:00"
+      timezone: "Europe/Sofia"
 
   # Maintain dependencies for npm
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'daily'
+  - package-ecosystem: "npm"
     assignees:
-      - 'RomiC'
+      - "RomiC"
     commit-message:
-      prefix: '🆙 📦'
+      prefix: "🆙 📦"
+    directory: "/"
     labels:
-      - 'dependencies'
-      - 'dx'
+      - "dependencies"
+      - "dx"
+    open-pull-requests-limit: 10
     reviewers:
-      - 'RomiC'
+      - "RomiC"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "14:00"
+      timezone: "Europe/Sofia"
     versioning-strategy: increase
