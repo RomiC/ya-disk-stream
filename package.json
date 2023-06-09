@@ -13,7 +13,7 @@
     "ya-disk": "^3.0.0"
   },
   "devDependencies": {
-    "dotenv": "16.1.3",
+    "dotenv": "16.1.4",
     "eslint": "8.42.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-prettier": "4.2.1",
