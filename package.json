@@ -7,7 +7,7 @@
   "author": "Roman Charugin <i@charugin.ru>",
   "license": "MIT",
   "engines": {
-    "node": ">= 14"
+    "node": ">= 16"
   },
   "dependencies": {
     "ya-disk": "^3.0.0"
