@@ -1,4 +1,5 @@
 const fs = require('fs');
+const https = require('https');
 const path = require('path');
 const { meta, resources } = require('ya-disk');
 
@@ -36,7 +37,11 @@ function checkRemoteFileSize(remoteFile, expectedSize, onSuccess) {
 describe('uploading and downloading file', () => {
   afterAll((done) => {
     fs.unlinkSync(remoteFileName);
-    resources.remove(API_TOKEN, remoteFilePath, true, done, done);
+    const cleanupDone = (err) => {
+      https.globalAgent.destroy();
+      done(err);
+    };
+    resources.remove(API_TOKEN, remoteFilePath, true, cleanupDone, cleanupDone);
   });
 
   it('should upload file', (done) => {
