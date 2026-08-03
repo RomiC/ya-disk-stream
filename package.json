@@ -7,13 +7,12 @@
   "author": "Roman Charugin <i@charugin.ru>",
   "license": "MIT",
   "engines": {
-    "node": ">= 14"
+    "node": ">= 22"
   },
   "dependencies": {
     "ya-disk": "^3.0.0"
   },
   "devDependencies": {
-    "dotenv": "16.4.5",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.1.3",
@@ -24,7 +23,7 @@
   },
   "scripts": {
     "example": "babel-node",
-    "test": "jest --no-cache --runInBand",
+    "test": "node --env-file-if-exists=.env ./node_modules/.bin/jest --no-cache --runInBand",
     "lint": "eslint --max-warnings 0 ./lib ./specs ./features",
     "lint:fix": "npm run lint -- --fix",
     "coverage": "codecov --clear --token=2b70b92f-f39e-4a17-90fa-47b8449573f7",
