@@ -3,9 +3,8 @@ const https = require('https');
 const path = require('path');
 const { meta, resources } = require('ya-disk');
 
-const { API_TOKEN = process.env.API_TOKEN } = require('dotenv').config();
+const { API_TOKEN } = process.env;
 const { upload: uploadStream, download: downloadStream } = require('../index');
-
 jest.unmock('ya-disk');
 
 const localFileName = path.resolve(
