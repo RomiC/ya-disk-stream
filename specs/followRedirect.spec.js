@@ -18,7 +18,8 @@ const redirectResponse = (url) => ({
   statusCode: 302,
   headers: {
     location: url
-  }
+  },
+  destroy: jest.fn()
 });
 const lastResponse = {
   statusCode: 200,
