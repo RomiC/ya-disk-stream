@@ -51,5 +51,8 @@ module.exports = {
   testTimeout: 30000,
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
-  unmockedModulePathPatterns: []
+  unmockedModulePathPatterns: [],
+
+  // Skip integration tests when no API_TOKEN (e.g. Dependabot PRs)
+  testPathIgnorePatterns: process.env.API_TOKEN ? [] : ['/features/']
 };
