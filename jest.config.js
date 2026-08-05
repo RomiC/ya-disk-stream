@@ -54,5 +54,8 @@ module.exports = {
   unmockedModulePathPatterns: [],
 
   // Skip integration tests when no API_TOKEN (e.g. Dependabot PRs)
-  testPathIgnorePatterns: process.env.API_TOKEN ? [] : ['features/']
+  testPathIgnorePatterns:
+    process.env.API_TOKEN && process.env.GITHUB_ACTOR !== 'dependabot[bot]'
+      ? []
+      : ['features/']
 };
