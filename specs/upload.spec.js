@@ -1,10 +1,10 @@
 const https = require('https');
 const { parse: urlParse } = require('url');
+const assert = require('node:assert/strict');
+const { afterEach, beforeEach, describe, mock, test } = require('node:test');
+
 const yaDisk = require('ya-disk');
 const upload = require('../lib/upload');
-
-jest.mock('https');
-jest.mock('ya-disk');
 
 const token = 'it-is-just-a-token-sample';
 const file = 'disk:/file.txt';
@@ -15,36 +15,60 @@ const uploadLinkResponseMock = {
   method: 'PUT'
 };
 const httpsRequestParamsMock = Object.assign(
+  {},
   urlParse(uploadLinkResponseMock.href),
   { method: uploadLinkResponseMock.method }
 );
 
-test('it should call upload.link with correct params and fire onReady callback in case of success', () => {
-  const onReadyMock = jest.fn();
+describe('upload', () => {
+  let linkMock;
 
-  upload(token, file, overwrite, onReadyMock);
+  beforeEach(() => {
+    linkMock = mock.method(
+      yaDisk.upload,
+      'link',
+      (token, file, overwrite, success, error) => {
+        linkMock._onSuccessCallback = success;
+        linkMock._onErrorCallback = error;
+      }
+    );
+  });
 
-  expect(yaDisk.upload.link).toHaveBeenLastCalledWith(
-    token,
-    file,
-    overwrite,
-    expect.any(Function),
-    undefined
-  );
+  afterEach(() => mock.restoreAll());
 
-  yaDisk.upload.link._onSuccessCallback(uploadLinkResponseMock);
+  test('should call upload.link with correct params and fire onReady callback in case of success', () => {
+    const onReadyMock = mock.fn();
 
-  expect(https.request).toHaveBeenCalledWith(httpsRequestParamsMock);
-  expect(onReadyMock).toHaveBeenCalledWith(expect.any(Object));
-});
+    upload(token, file, overwrite, onReadyMock);
 
-test('it should fire the onError callback in case of error', () => {
-  const error = new Error('error message');
-  const onErrorMock = jest.fn();
+    assert.deepStrictEqual(linkMock.mock.calls[0].arguments.slice(0, 3), [
+      token,
+      file,
+      overwrite
+    ]);
+    assert.strictEqual(typeof linkMock.mock.calls[0].arguments[3], 'function');
 
-  upload(token, file, overwrite, undefined, onErrorMock);
+    const httpsRequestMock = mock.method(https, 'request', () => {
+      return { end: () => {} };
+    });
 
-  yaDisk.upload.link._onErrorCallback(error);
+    linkMock._onSuccessCallback(uploadLinkResponseMock);
 
-  expect(onErrorMock).toHaveBeenCalledWith(error);
+    assert.deepStrictEqual(
+      httpsRequestMock.mock.calls[0].arguments[0],
+      httpsRequestParamsMock
+    );
+    assert.strictEqual(onReadyMock.mock.callCount(), 1);
+  });
+
+  test('should fire the onError callback in case of error', () => {
+    const error = new Error('error message');
+    const onErrorMock = mock.fn();
+
+    upload(token, file, overwrite, undefined, onErrorMock);
+
+    linkMock._onErrorCallback(error);
+
+    assert.deepStrictEqual(onErrorMock.mock.calls[0].arguments[0], error);
+  });
 });

@@ -1,11 +1,16 @@
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
+const assert = require('node:assert/strict');
+const { after, before, describe, it } = require('node:test');
+
 const { meta, resources } = require('ya-disk');
 
 const { API_TOKEN } = process.env;
 const { upload: uploadStream, download: downloadStream } = require('../index');
-jest.unmock('ya-disk');
+
+const shouldRun = API_TOKEN && process.env.GITHUB_ACTOR !== 'dependabot[bot]';
+const describeOrSkip = shouldRun ? describe : describe.skip;
 
 const localFileName = path.resolve(
   require.resolve('ya-disk').split('node_modules/')[0],
@@ -15,73 +20,80 @@ const localReadStream = fs.createReadStream(localFileName);
 const { size: localFileSize } = fs.statSync(localFileName);
 const remoteFileName = `package_${Math.round(Math.random() * 100)}.json`;
 const remoteFilePath = `disk:/${remoteFileName}`;
-const localWriteStream = fs.createWriteStream(remoteFileName);
 
-function checkRemoteFileSize(remoteFile, expectedSize, onSuccess) {
-  meta.get(
-    API_TOKEN,
-    remoteFile,
-    { fields: 'name,size' },
-    ({ size }) => {
-      expect(size).toBe(expectedSize);
-      onSuccess();
-    },
-    (err) => {
-      console.error(`Failed to get ${remoteFile} file meta!`);
-      throw err;
-    }
-  );
+function getRemoteFileSize(remoteFile) {
+  return new Promise((resolve, reject) => {
+    meta.get(
+      API_TOKEN,
+      remoteFile,
+      { fields: 'name,size' },
+      ({ size }) => resolve(size),
+      reject
+    );
+  });
 }
 
-describe('uploading and downloading file', () => {
-  afterAll((done) => {
-    fs.unlinkSync(remoteFileName);
-    const cleanupDone = (err) => {
-      https.globalAgent.destroy();
-      done(err);
-    };
-    resources.remove(API_TOKEN, remoteFilePath, true, cleanupDone, cleanupDone);
-  });
-
-  it('should upload file', (done) => {
+function uploadFile(token, filePath, stream) {
+  return new Promise((resolve, reject) => {
     uploadStream(
-      API_TOKEN,
-      remoteFilePath,
+      token,
+      filePath,
       true,
-      (stream) => {
-        stream.on('finish', () => {
-          setTimeout(
-            () => checkRemoteFileSize(remoteFilePath, localFileSize, done),
-            5000
-          );
-        });
-        localReadStream.pipe(stream);
+      (writeStream) => {
+        writeStream.on('finish', resolve);
+        stream.pipe(writeStream);
       },
-      (err) => {
-        console.error('Failed to create the upload stream!');
-        throw err;
-      }
+      reject
     );
   });
+}
 
-  it('should download file', (done) => {
+function downloadFile(token, filePath, writeStream) {
+  return new Promise((resolve, reject) => {
     downloadStream(
-      API_TOKEN,
-      remoteFilePath,
-      (stream) => {
-        localWriteStream.on('finish', () =>
-          checkRemoteFileSize(
-            remoteFilePath,
-            fs.statSync(remoteFileName).size,
-            done
-          )
-        );
-        stream.pipe(localWriteStream);
+      token,
+      filePath,
+      (readStream) => {
+        writeStream.on('finish', resolve);
+        readStream.pipe(writeStream);
       },
-      (err) => {
-        console.error('Failed to create the download stream!');
-        throw err;
-      }
+      reject
     );
+  });
+}
+
+function removeFile(token, filePath) {
+  return new Promise((resolve) => {
+    resources.remove(token, filePath, true, resolve, resolve);
+  });
+}
+
+let localWriteStream;
+
+describeOrSkip('uploading and downloading file', () => {
+  before(() => {
+    localWriteStream = fs.createWriteStream(remoteFileName);
+  });
+
+  after(async () => {
+    fs.unlinkSync(remoteFileName);
+    await removeFile(API_TOKEN, remoteFilePath);
+    https.globalAgent.destroy();
+  });
+
+  it('should upload file', async () => {
+    await uploadFile(API_TOKEN, remoteFilePath, localReadStream);
+    // Wait for the file to be available on the server
+    await new Promise((r) => setTimeout(r, 5000));
+    const size = await getRemoteFileSize(remoteFilePath);
+    assert.strictEqual(size, localFileSize);
+  });
+
+  it('should download file', async () => {
+    await downloadFile(API_TOKEN, remoteFilePath, localWriteStream);
+    const size = fs.statSync(remoteFileName).size;
+    // Verify the downloaded file exists on the server
+    const remoteSize = await getRemoteFileSize(remoteFilePath);
+    assert.strictEqual(remoteSize, size);
   });
 });
