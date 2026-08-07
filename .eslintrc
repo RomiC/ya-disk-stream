@@ -1,6 +1,6 @@
 {
   "parserOptions": {
-    "ecmaVersion": 6
+    "ecmaVersion": 2022
   },
   "plugins": ["prettier"],
   "extends": ["eslint:recommended", "prettier"],
@@ -26,7 +26,7 @@
     "prettier/prettier": "warn",
     "semi": ["warn", "always"],
     "space-before-blocks": ["warn", "always"],
-    "space-before-function-paren": ["warn", "never"],
+    "space-before-function-paren": "off",
     "spaced-comment": ["warn", "always"],
     "space-infix-ops": "warn",
     "space-in-parens": ["warn", "never"],
@@ -39,6 +39,17 @@
     ]
   },
   "env": {
-    "node": true
+    "node": true,
+    "es2022": true
+  },
+  "globals": {
+    "after": "readonly",
+    "afterEach": "readonly",
+    "before": "readonly",
+    "beforeEach": "readonly",
+    "describe": "readonly",
+    "it": "readonly",
+    "mock": "readonly",
+    "test": "readonly"
   }
 }

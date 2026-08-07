@@ -1,16 +1,19 @@
-const { parse: parseUrl } = require('url');
+const { parse: urlParse } = require('url');
 const https = require('https');
+const assert = require('node:assert/strict');
+const { afterEach, describe, mock, test } = require('node:test');
+
 const followRedirect = require('../lib/followRedirect');
 
 const method = 'GET';
 const originalUrl = 'https://yandex.ru/';
-const originalParsedUrl = Object.assign({}, parseUrl(originalUrl), { method });
+const originalParsedUrl = Object.assign({}, urlParse(originalUrl), { method });
 const firstRedirectUrl = 'https://bing.com/';
-const firstRedirectParsedUrl = Object.assign({}, parseUrl(firstRedirectUrl), {
+const firstRedirectParsedUrl = Object.assign({}, urlParse(firstRedirectUrl), {
   method
 });
 const secondRedirectUrl = 'https://google.com/';
-const secondRedirectParsedUrl = Object.assign({}, parseUrl(secondRedirectUrl), {
+const secondRedirectParsedUrl = Object.assign({}, urlParse(secondRedirectUrl), {
   method
 });
 
@@ -19,41 +22,51 @@ const redirectResponse = (url) => ({
   headers: {
     location: url
   },
-  destroy: jest.fn()
+  destroy: () => {}
 });
 const lastResponse = {
-  statusCode: 200,
-  data: "finally you've come"
+  statusCode: 200
 };
 
-jest.mock('https');
+describe('followRedirect', () => {
+  let httpsRequestMock;
 
-describe('basic functionality', () => {
-  it('it should follow redirects', () => {
-    const finalCallback = jest.fn();
+  afterEach(() => mock.restoreAll());
+
+  test('should follow redirects', () => {
+    const finalCallback = mock.fn();
+
+    httpsRequestMock = mock.method(https, 'request', (options, callback) => {
+      httpsRequestMock._callback = callback;
+      return { end: () => {} };
+    });
 
     followRedirect(originalUrl, method, finalCallback);
-    expect(https.request).toHaveBeenCalledWith(
-      originalParsedUrl,
-      expect.any(Function)
+
+    assert.deepStrictEqual(
+      httpsRequestMock.mock.calls[0].arguments[0],
+      originalParsedUrl
     );
 
-    https.request._requestCallback(redirectResponse(firstRedirectUrl));
+    httpsRequestMock._callback(redirectResponse(firstRedirectUrl));
 
-    expect(https.request).toHaveBeenCalledWith(
-      firstRedirectParsedUrl,
-      expect.any(Function)
+    assert.deepStrictEqual(
+      httpsRequestMock.mock.calls[1].arguments[0],
+      firstRedirectParsedUrl
     );
 
-    https.request._requestCallback(redirectResponse(secondRedirectUrl));
+    httpsRequestMock._callback(redirectResponse(secondRedirectUrl));
 
-    expect(https.request).toHaveBeenCalledWith(
-      secondRedirectParsedUrl,
-      expect.any(Function)
+    assert.deepStrictEqual(
+      httpsRequestMock.mock.calls[2].arguments[0],
+      secondRedirectParsedUrl
     );
 
-    https.request._requestCallback(lastResponse);
+    httpsRequestMock._callback(lastResponse);
 
-    expect(finalCallback).toHaveBeenCalledWith(lastResponse);
+    assert.deepStrictEqual(
+      finalCallback.mock.calls[0].arguments[0],
+      lastResponse
+    );
   });
 });
