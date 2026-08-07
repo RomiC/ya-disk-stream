@@ -14,22 +14,25 @@
   },
   "devDependencies": {
     "c8": "12.0.0",
-    "eslint": "8.57.0",
-    "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-prettier": "5.5.6",
     "husky": "9.1.7",
     "lint-staged": "17.3.0",
-    "prettier": "3.9.6"
+    "oxfmt": "0.62.0",
+    "oxlint": "1.77.0"
   },
   "scripts": {
     "example": "babel-node",
     "test": "node --env-file-if-exists=.env --test 'specs/*.spec.js' 'features/*.feature.js'",
     "test:coverage": "c8 --all --include='lib/*.js' --include='index.js' --reporter=text --reporter=lcov --reporter=clover node --env-file-if-exists=.env --test 'specs/*.spec.js' 'features/*.feature.js'",
-    "lint": "eslint --max-warnings 0 ./lib ./specs ./features",
-    "lint:fix": "npm run lint -- --fix",
-    "prepare": "husky install"
+    "lint": "oxlint -c oxlint.config.mjs",
+    "lint:fix": "oxlint -c oxlint.config.mjs --fix",
+    "format": "oxfmt -c oxfmt.config.mjs",
+    "format:check": "oxfmt -c oxfmt.config.mjs --check",
+    "prepare": "husky"
   },
   "lint-staged": {
-    "*.js": "npm run lint:fix"
+    "*.{js,mjs}": [
+      "npm run lint:fix",
+      "npm run format"
+    ]
   }
 }
