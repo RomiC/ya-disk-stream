@@ -10,7 +10,7 @@
     "node": ">= 22"
   },
   "dependencies": {
-    "ya-disk": "^3.0.0"
+    "ya-disk": "^5.0.1"
   },
   "devDependencies": {
     "c8": "12.0.0",
