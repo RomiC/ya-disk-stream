@@ -1,5 +1,4 @@
 import https from 'node:https';
-import { parse as urlParse } from 'node:url';
 import assert from 'node:assert/strict';
 import { afterEach, describe, mock, test } from 'node:test';
 
@@ -13,11 +12,6 @@ const uploadLinkResponse = {
   href: 'https://example.com/',
   method: 'PUT'
 };
-const httpsRequestParams = Object.assign(
-  {},
-  urlParse(uploadLinkResponse.href),
-  { method: uploadLinkResponse.method }
-);
 
 describe('upload', () => {
   afterEach(() => mock.restoreAll());
@@ -38,10 +32,13 @@ describe('upload', () => {
 
     await upload(token, file, overwrite);
 
-    assert.deepStrictEqual(
+    assert.strictEqual(
       httpsRequestMock.mock.calls[0].arguments[0],
-      httpsRequestParams
+      uploadLinkResponse.href
     );
+    assert.deepStrictEqual(httpsRequestMock.mock.calls[0].arguments[1], {
+      method: uploadLinkResponse.method
+    });
   });
 
   test('should reject when ya-disk API call fails', async () => {

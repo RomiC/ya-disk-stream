@@ -1,5 +1,4 @@
 import https from 'node:https';
-import { parse as urlParse } from 'node:url';
 import assert from 'node:assert/strict';
 import { afterEach, describe, mock, test } from 'node:test';
 
@@ -25,13 +24,10 @@ describe('download', () => {
       })
     );
 
-    const { href, method } = { href: downloadLink, method: downloadMethod };
-    const parsedUrl = Object.assign({}, urlParse(href), { method });
-
     const httpsRequestMock = mock.method(
       https,
       'request',
-      (options, callback) => {
+      (url, options, callback) => {
         httpsRequestMock._callback = callback;
         return { end: () => {}, on: () => {} };
       }
@@ -42,10 +38,13 @@ describe('download', () => {
     // Wait for the async chain to settle
     await new Promise((r) => setTimeout(r, 0));
 
-    assert.deepStrictEqual(
+    assert.strictEqual(
       httpsRequestMock.mock.calls[0].arguments[0],
-      parsedUrl
+      downloadLink
     );
+    assert.deepStrictEqual(httpsRequestMock.mock.calls[0].arguments[1], {
+      method: downloadMethod
+    });
 
     httpsRequestMock._callback({ statusCode: 200 });
 
