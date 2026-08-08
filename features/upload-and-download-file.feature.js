@@ -33,20 +33,20 @@ async function getRemoteFileSize(remoteFile) {
 
 async function uploadFile(token, filePath, stream) {
   const writeStream = await uploadStream(token, filePath, true);
-  return new Promise((resolve, reject) => {
-    writeStream.on('finish', resolve);
-    writeStream.on('error', reject);
-    stream.pipe(writeStream);
-  });
+  const { promise, resolve, reject } = Promise.withResolvers();
+  writeStream.on('finish', resolve);
+  writeStream.on('error', reject);
+  stream.pipe(writeStream);
+  return promise;
 }
 
 async function downloadFile(token, filePath, writeStream) {
   const readStream = await downloadStream(token, filePath);
-  return new Promise((resolve, reject) => {
-    writeStream.on('finish', resolve);
-    writeStream.on('error', reject);
-    readStream.pipe(writeStream);
-  });
+  const { promise, resolve, reject } = Promise.withResolvers();
+  writeStream.on('finish', resolve);
+  writeStream.on('error', reject);
+  readStream.pipe(writeStream);
+  return promise;
 }
 
 async function removeFile(token, filePath) {
