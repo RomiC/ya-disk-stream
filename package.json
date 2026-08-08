@@ -1,6 +1,6 @@
 {
   "name": "ya-disk-stream",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Readable and writable streams for uploading/downloading files from Yandex.Disk",
   "type": "module",
   "main": "./dist/index.cjs",
