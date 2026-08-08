@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
-import { upload } from '../index';
+import { upload } from '../index.js';
 
 const { API_TOKEN = '' } = process.env;
 const fileToUpload = fs.createReadStream(path.join(__dirname, 'upload.js'));

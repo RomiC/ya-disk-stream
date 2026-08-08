@@ -1,9 +1,9 @@
-const https = require('https');
-const { parse: urlParse } = require('url');
-const assert = require('node:assert/strict');
-const { afterEach, describe, mock, test } = require('node:test');
+import https from 'node:https';
+import { parse as urlParse } from 'node:url';
+import assert from 'node:assert/strict';
+import { afterEach, describe, mock, test } from 'node:test';
 
-const upload = require('../lib/upload');
+import { upload } from '../lib/upload.js';
 
 const token = 'it-is-just-a-token-sample';
 const file = 'disk:/file.txt';

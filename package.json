@@ -2,7 +2,16 @@
   "name": "ya-disk-stream",
   "version": "2.0.0",
   "description": "Readable and writable streams for uploading/downloading files from Yandex.Disk",
-  "main": "index.js",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./index.js",
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "repository": "git@github.com:RomiC/ya-disk-stream.git",
   "author": "Roman Charugin <i@charugin.ru>",
   "license": "MIT",
@@ -14,13 +23,15 @@
   },
   "devDependencies": {
     "c8": "12.0.0",
+    "esbuild": "0.28.1",
     "husky": "9.1.7",
     "lint-staged": "17.3.0",
     "oxfmt": "0.62.0",
     "oxlint": "1.77.0"
   },
   "scripts": {
-    "example": "babel-node",
+    "build": "esbuild --bundle --platform=node --target=node22 --outfile=dist/index.cjs index.js",
+    "prepublishOnly": "npm run build",
     "test": "node --env-file-if-exists=.env --test 'specs/*.spec.js' 'features/*.feature.js'",
     "test:coverage": "c8 --all --include='lib/*.js' --include='index.js' --reporter=text --reporter=lcov --reporter=clover node --env-file-if-exists=.env --test 'specs/*.spec.js' 'features/*.feature.js'",
     "lint": "oxlint -c oxlint.config.mjs",
@@ -30,7 +41,7 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{js,mjs}": [
+    "*.{js,mjs,cjs}": [
       "npm run lint:fix",
       "npm run format"
     ]

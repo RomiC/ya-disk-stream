@@ -1,19 +1,22 @@
-const fs = require('fs');
-const https = require('https');
-const path = require('path');
-const assert = require('node:assert/strict');
-const { after, before, describe, it } = require('node:test');
+import fs from 'node:fs';
+import https from 'node:https';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import assert from 'node:assert/strict';
+import { after, before, describe, it } from 'node:test';
 
-const { meta, resources } = require('ya-disk');
+import { meta, resources } from 'ya-disk';
 
 const { API_TOKEN } = process.env;
-const { upload: uploadStream, download: downloadStream } = require('../index');
+const { upload: uploadStream, download: downloadStream } =
+  await import('../index.js');
 
 const shouldRun = API_TOKEN && process.env.GITHUB_ACTOR !== 'dependabot[bot]';
 const describeOrSkip = shouldRun ? describe : describe.skip;
 
+const yaDiskPath = fileURLToPath(import.meta.resolve('ya-disk'));
 const localFileName = path.resolve(
-  require.resolve('ya-disk').split('node_modules/')[0],
+  yaDiskPath.split('node_modules/')[0],
   'package.json'
 );
 const localReadStream = fs.createReadStream(localFileName);

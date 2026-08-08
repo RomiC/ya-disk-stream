@@ -1,9 +1,9 @@
-const { parse: urlParse } = require('url');
-const https = require('https');
-const assert = require('node:assert/strict');
-const { afterEach, describe, mock, test } = require('node:test');
+import { parse as urlParse } from 'node:url';
+import https from 'node:https';
+import assert from 'node:assert/strict';
+import { afterEach, describe, mock, test } from 'node:test';
 
-const followRedirect = require('../lib/followRedirect');
+import { followRedirect } from '../lib/followRedirect.js';
 
 const method = 'GET';
 const originalUrl = 'https://yandex.ru/';

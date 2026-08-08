@@ -1,6 +1,6 @@
-import fs from 'fs';
+import fs from 'node:fs';
 
-import { download } from '../index';
+import { download } from '../index.js';
 
 const { API_TOKEN = '' } = process.env;
 const fileToSave = fs.createWriteStream('./Mountains.jpg');
