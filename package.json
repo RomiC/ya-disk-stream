@@ -12,6 +12,11 @@
     },
     "./package.json": "./package.json"
   },
+  "files": [
+    "index.js",
+    "lib",
+    "dist"
+  ],
   "repository": "git@github.com:RomiC/ya-disk-stream.git",
   "author": "Roman Charugin <i@charugin.ru>",
   "license": "MIT",
