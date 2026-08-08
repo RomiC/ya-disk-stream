@@ -5,7 +5,7 @@ on:
     types: [opened, edited, synchronize]
   push:
     branches:
-      - master
+      - main
 
 jobs:
   test:
@@ -15,16 +15,18 @@ jobs:
         node: ["22", "24"]
     name: Test with node ${{ matrix.node }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
         with:
           node-version: ${{ matrix.node }}
       - run: npm ci
       - run: npm run lint
+      - run: npm run format:check
       - id: running-tests
         run: npm run test:coverage
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
+      - run: npm run build
       - uses: coverallsapp/github-action@v2.3.8
         with:
           github-token: ${{ secrets.github_token }}
