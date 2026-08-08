@@ -1,11 +1,8 @@
-const fs = require('fs');
-const path = require('path');
 const https = require('https');
 const { parse: urlParse } = require('url');
 const assert = require('node:assert/strict');
-const { afterEach, beforeEach, describe, mock, test } = require('node:test');
+const { afterEach, describe, mock, test } = require('node:test');
 
-const yaDisk = require('ya-disk');
 const download = require('../lib/download');
 
 const token = 'it-is-just-a-token-sample';
@@ -13,74 +10,67 @@ const file = 'disk:/file.txt';
 const downloadLink = 'https://disk.yandex.ru/download';
 const downloadMethod = 'GET';
 
-const readableStream = fs.createReadStream(
-  path.join(__dirname, '..', 'package.json')
-);
-
 describe('download', () => {
-  let linkMock;
-  let onReadyCallback;
-  let onErrorCallback;
-
-  beforeEach(() => {
-    onReadyCallback = mock.fn();
-    onErrorCallback = mock.fn();
-
-    linkMock = mock.method(
-      yaDisk.download,
-      'link',
-      (token, file, success, error) => {
-        linkMock._onSuccessCallback = success;
-        linkMock._onErrorCallback = error;
-      }
-    );
-  });
-
   afterEach(() => mock.restoreAll());
 
-  test('should call download.link with correct params and fire onReady callback in case of success', () => {
-    download(token, file, onReadyCallback);
+  test('should get download link and follow redirect', async () => {
+    mock.method(globalThis, 'fetch', () =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        text: () =>
+          Promise.resolve(
+            JSON.stringify({ href: downloadLink, method: downloadMethod })
+          )
+      })
+    );
 
-    assert.deepStrictEqual(linkMock.mock.calls[0].arguments.slice(0, 2), [
-      token,
-      file
-    ]);
-    assert.strictEqual(typeof linkMock.mock.calls[0].arguments[2], 'function');
+    const { href, method } = { href: downloadLink, method: downloadMethod };
+    const parsedUrl = Object.assign({}, urlParse(href), { method });
 
     const httpsRequestMock = mock.method(
       https,
       'request',
       (options, callback) => {
         httpsRequestMock._callback = callback;
-        return { end: () => {} };
+        return { end: () => {}, on: () => {} };
       }
     );
 
-    linkMock._onSuccessCallback({
-      href: downloadLink,
-      method: downloadMethod
-    });
+    const promise = download(token, file);
+
+    // Wait for the async chain to settle
+    await new Promise((r) => setTimeout(r, 0));
 
     assert.deepStrictEqual(
       httpsRequestMock.mock.calls[0].arguments[0],
-      Object.assign({}, urlParse(downloadLink), { method: downloadMethod })
+      parsedUrl
     );
 
-    httpsRequestMock._callback({ statusCode: 200, ...readableStream });
+    httpsRequestMock._callback({ statusCode: 200 });
 
-    assert.strictEqual(
-      onReadyCallback.mock.calls[0].arguments[0].statusCode,
-      200
-    );
+    const stream = await promise;
+    assert.strictEqual(stream.statusCode, 200);
   });
 
-  test('should fire the onError callback in case of error', () => {
-    const error = new Error('error message');
+  test('should reject when ya-disk API call fails', async () => {
+    mock.method(globalThis, 'fetch', () =>
+      Promise.resolve({
+        ok: false,
+        status: 401,
+        text: () =>
+          Promise.resolve(
+            JSON.stringify({
+              error: 'UnauthorizedError',
+              description: 'Not authorized'
+            })
+          )
+      })
+    );
 
-    download(token, file, onReadyCallback, onErrorCallback);
-
-    linkMock._onErrorCallback(error);
-
-    assert.deepStrictEqual(onErrorCallback.mock.calls[0].arguments[0], error);
+    await assert.rejects(download(token, file), {
+      name: 'UnauthorizedError',
+      message: 'Not authorized'
+    });
   });
 });

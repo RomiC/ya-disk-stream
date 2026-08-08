@@ -33,15 +33,13 @@ describe('followRedirect', () => {
 
   afterEach(() => mock.restoreAll());
 
-  test('should follow redirects', () => {
-    const finalCallback = mock.fn();
-
+  test('should follow redirects', async () => {
     httpsRequestMock = mock.method(https, 'request', (options, callback) => {
       httpsRequestMock._callback = callback;
-      return { end: () => {} };
+      return { end: () => {}, on: () => {} };
     });
 
-    followRedirect(originalUrl, method, finalCallback);
+    const promise = followRedirect(originalUrl, method);
 
     assert.deepStrictEqual(
       httpsRequestMock.mock.calls[0].arguments[0],
@@ -64,9 +62,23 @@ describe('followRedirect', () => {
 
     httpsRequestMock._callback(lastResponse);
 
-    assert.deepStrictEqual(
-      finalCallback.mock.calls[0].arguments[0],
-      lastResponse
-    );
+    const result = await promise;
+
+    assert.deepStrictEqual(result, lastResponse);
+  });
+
+  test('should reject on unexpected status code', async () => {
+    httpsRequestMock = mock.method(https, 'request', (options, callback) => {
+      httpsRequestMock._callback = callback;
+      return { end: () => {}, on: () => {} };
+    });
+
+    const promise = followRedirect(originalUrl, method);
+
+    httpsRequestMock._callback({ statusCode: 500 });
+
+    await assert.rejects(promise, {
+      message: 'Unexpected status code: 500'
+    });
   });
 });

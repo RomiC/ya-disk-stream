@@ -21,51 +21,33 @@ const { size: localFileSize } = fs.statSync(localFileName);
 const remoteFileName = `package_${Math.round(Math.random() * 100)}.json`;
 const remoteFilePath = `disk:/${remoteFileName}`;
 
-function getRemoteFileSize(remoteFile) {
+async function getRemoteFileSize(remoteFile) {
+  const { size } = await meta.get(API_TOKEN, remoteFile, {
+    fields: 'name,size'
+  });
+  return size;
+}
+
+async function uploadFile(token, filePath, stream) {
+  const writeStream = await uploadStream(token, filePath, true);
   return new Promise((resolve, reject) => {
-    meta.get(
-      API_TOKEN,
-      remoteFile,
-      { fields: 'name,size' },
-      ({ size }) => resolve(size),
-      reject
-    );
+    writeStream.on('finish', resolve);
+    writeStream.on('error', reject);
+    stream.pipe(writeStream);
   });
 }
 
-function uploadFile(token, filePath, stream) {
+async function downloadFile(token, filePath, writeStream) {
+  const readStream = await downloadStream(token, filePath);
   return new Promise((resolve, reject) => {
-    uploadStream(
-      token,
-      filePath,
-      true,
-      (writeStream) => {
-        writeStream.on('finish', resolve);
-        stream.pipe(writeStream);
-      },
-      reject
-    );
+    writeStream.on('finish', resolve);
+    writeStream.on('error', reject);
+    readStream.pipe(writeStream);
   });
 }
 
-function downloadFile(token, filePath, writeStream) {
-  return new Promise((resolve, reject) => {
-    downloadStream(
-      token,
-      filePath,
-      (readStream) => {
-        writeStream.on('finish', resolve);
-        readStream.pipe(writeStream);
-      },
-      reject
-    );
-  });
-}
-
-function removeFile(token, filePath) {
-  return new Promise((resolve) => {
-    resources.remove(token, filePath, true, resolve, resolve);
-  });
+async function removeFile(token, filePath) {
+  await resources.remove(token, filePath, true);
 }
 
 let localWriteStream;
