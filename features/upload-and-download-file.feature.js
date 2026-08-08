@@ -1,19 +1,22 @@
-const fs = require('fs');
-const https = require('https');
-const path = require('path');
-const assert = require('node:assert/strict');
-const { after, before, describe, it } = require('node:test');
+import fs from 'node:fs';
+import https from 'node:https';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import assert from 'node:assert/strict';
+import { after, before, describe, it } from 'node:test';
 
-const { meta, resources } = require('ya-disk');
+import { meta, resources } from 'ya-disk';
 
 const { API_TOKEN } = process.env;
-const { upload: uploadStream, download: downloadStream } = require('../index');
+const { upload: uploadStream, download: downloadStream } =
+  await import('../index.js');
 
 const shouldRun = API_TOKEN && process.env.GITHUB_ACTOR !== 'dependabot[bot]';
 const describeOrSkip = shouldRun ? describe : describe.skip;
 
+const yaDiskPath = fileURLToPath(import.meta.resolve('ya-disk'));
 const localFileName = path.resolve(
-  require.resolve('ya-disk').split('node_modules/')[0],
+  yaDiskPath.split('node_modules/')[0],
   'package.json'
 );
 const localReadStream = fs.createReadStream(localFileName);
@@ -21,51 +24,33 @@ const { size: localFileSize } = fs.statSync(localFileName);
 const remoteFileName = `package_${Math.round(Math.random() * 100)}.json`;
 const remoteFilePath = `disk:/${remoteFileName}`;
 
-function getRemoteFileSize(remoteFile) {
-  return new Promise((resolve, reject) => {
-    meta.get(
-      API_TOKEN,
-      remoteFile,
-      { fields: 'name,size' },
-      ({ size }) => resolve(size),
-      reject
-    );
+async function getRemoteFileSize(remoteFile) {
+  const { size } = await meta.get(API_TOKEN, remoteFile, {
+    fields: 'name,size'
   });
+  return size;
 }
 
-function uploadFile(token, filePath, stream) {
-  return new Promise((resolve, reject) => {
-    uploadStream(
-      token,
-      filePath,
-      true,
-      (writeStream) => {
-        writeStream.on('finish', resolve);
-        stream.pipe(writeStream);
-      },
-      reject
-    );
-  });
+async function uploadFile(token, filePath, stream) {
+  const writeStream = await uploadStream(token, filePath, true);
+  const { promise, resolve, reject } = Promise.withResolvers();
+  writeStream.on('finish', resolve);
+  writeStream.on('error', reject);
+  stream.pipe(writeStream);
+  return promise;
 }
 
-function downloadFile(token, filePath, writeStream) {
-  return new Promise((resolve, reject) => {
-    downloadStream(
-      token,
-      filePath,
-      (readStream) => {
-        writeStream.on('finish', resolve);
-        readStream.pipe(writeStream);
-      },
-      reject
-    );
-  });
+async function downloadFile(token, filePath, writeStream) {
+  const readStream = await downloadStream(token, filePath);
+  const { promise, resolve, reject } = Promise.withResolvers();
+  writeStream.on('finish', resolve);
+  writeStream.on('error', reject);
+  readStream.pipe(writeStream);
+  return promise;
 }
 
-function removeFile(token, filePath) {
-  return new Promise((resolve) => {
-    resources.remove(token, filePath, true, resolve, resolve);
-  });
+async function removeFile(token, filePath) {
+  await resources.remove(token, filePath, true);
 }
 
 let localWriteStream;

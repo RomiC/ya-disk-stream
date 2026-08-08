@@ -1,21 +1,13 @@
-const { parse: urlParse } = require('url');
-const https = require('https');
-const assert = require('node:assert/strict');
-const { afterEach, describe, mock, test } = require('node:test');
+import https from 'node:https';
+import assert from 'node:assert/strict';
+import { afterEach, describe, mock, test } from 'node:test';
 
-const followRedirect = require('../lib/followRedirect');
+import { followRedirect } from '../lib/followRedirect.js';
 
 const method = 'GET';
 const originalUrl = 'https://yandex.ru/';
-const originalParsedUrl = Object.assign({}, urlParse(originalUrl), { method });
 const firstRedirectUrl = 'https://bing.com/';
-const firstRedirectParsedUrl = Object.assign({}, urlParse(firstRedirectUrl), {
-  method
-});
 const secondRedirectUrl = 'https://google.com/';
-const secondRedirectParsedUrl = Object.assign({}, urlParse(secondRedirectUrl), {
-  method
-});
 
 const redirectResponse = (url) => ({
   statusCode: 302,
@@ -33,40 +25,69 @@ describe('followRedirect', () => {
 
   afterEach(() => mock.restoreAll());
 
-  test('should follow redirects', () => {
-    const finalCallback = mock.fn();
-
-    httpsRequestMock = mock.method(https, 'request', (options, callback) => {
-      httpsRequestMock._callback = callback;
-      return { end: () => {} };
-    });
-
-    followRedirect(originalUrl, method, finalCallback);
-
-    assert.deepStrictEqual(
-      httpsRequestMock.mock.calls[0].arguments[0],
-      originalParsedUrl
+  test('should follow redirects', async () => {
+    httpsRequestMock = mock.method(
+      https,
+      'request',
+      (url, options, callback) => {
+        httpsRequestMock._callback = callback;
+        return { end: () => {}, on: () => {} };
+      }
     );
+
+    const promise = followRedirect(originalUrl, method);
+
+    assert.strictEqual(
+      httpsRequestMock.mock.calls[0].arguments[0],
+      originalUrl
+    );
+    assert.deepStrictEqual(httpsRequestMock.mock.calls[0].arguments[1], {
+      method
+    });
 
     httpsRequestMock._callback(redirectResponse(firstRedirectUrl));
 
-    assert.deepStrictEqual(
+    assert.strictEqual(
       httpsRequestMock.mock.calls[1].arguments[0],
-      firstRedirectParsedUrl
+      firstRedirectUrl
     );
+    assert.deepStrictEqual(httpsRequestMock.mock.calls[1].arguments[1], {
+      method
+    });
 
     httpsRequestMock._callback(redirectResponse(secondRedirectUrl));
 
-    assert.deepStrictEqual(
+    assert.strictEqual(
       httpsRequestMock.mock.calls[2].arguments[0],
-      secondRedirectParsedUrl
+      secondRedirectUrl
     );
+    assert.deepStrictEqual(httpsRequestMock.mock.calls[2].arguments[1], {
+      method
+    });
 
     httpsRequestMock._callback(lastResponse);
 
-    assert.deepStrictEqual(
-      finalCallback.mock.calls[0].arguments[0],
-      lastResponse
+    const result = await promise;
+
+    assert.deepStrictEqual(result, lastResponse);
+  });
+
+  test('should reject on unexpected status code', async () => {
+    httpsRequestMock = mock.method(
+      https,
+      'request',
+      (url, options, callback) => {
+        httpsRequestMock._callback = callback;
+        return { end: () => {}, on: () => {} };
+      }
     );
+
+    const promise = followRedirect(originalUrl, method);
+
+    httpsRequestMock._callback({ statusCode: 500 });
+
+    await assert.rejects(promise, {
+      message: 'Unexpected status code: 500'
+    });
   });
 });

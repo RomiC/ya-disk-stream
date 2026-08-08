@@ -1,74 +1,64 @@
-const https = require('https');
-const { parse: urlParse } = require('url');
-const assert = require('node:assert/strict');
-const { afterEach, beforeEach, describe, mock, test } = require('node:test');
+import https from 'node:https';
+import assert from 'node:assert/strict';
+import { afterEach, describe, mock, test } from 'node:test';
 
-const yaDisk = require('ya-disk');
-const upload = require('../lib/upload');
+import { upload } from '../lib/upload.js';
 
 const token = 'it-is-just-a-token-sample';
 const file = 'disk:/file.txt';
 const overwrite = false;
 
-const uploadLinkResponseMock = {
+const uploadLinkResponse = {
   href: 'https://example.com/',
   method: 'PUT'
 };
-const httpsRequestParamsMock = Object.assign(
-  {},
-  urlParse(uploadLinkResponseMock.href),
-  { method: uploadLinkResponseMock.method }
-);
 
 describe('upload', () => {
-  let linkMock;
-
-  beforeEach(() => {
-    linkMock = mock.method(
-      yaDisk.upload,
-      'link',
-      (token, file, overwrite, success, error) => {
-        linkMock._onSuccessCallback = success;
-        linkMock._onErrorCallback = error;
-      }
-    );
-  });
-
   afterEach(() => mock.restoreAll());
 
-  test('should call upload.link with correct params and fire onReady callback in case of success', () => {
-    const onReadyMock = mock.fn();
-
-    upload(token, file, overwrite, onReadyMock);
-
-    assert.deepStrictEqual(linkMock.mock.calls[0].arguments.slice(0, 3), [
-      token,
-      file,
-      overwrite
-    ]);
-    assert.strictEqual(typeof linkMock.mock.calls[0].arguments[3], 'function');
-
-    const httpsRequestMock = mock.method(https, 'request', () => {
-      return { end: () => {} };
-    });
-
-    linkMock._onSuccessCallback(uploadLinkResponseMock);
-
-    assert.deepStrictEqual(
-      httpsRequestMock.mock.calls[0].arguments[0],
-      httpsRequestParamsMock
+  test('should get upload link and create writable stream', async () => {
+    mock.method(globalThis, 'fetch', () =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve(JSON.stringify(uploadLinkResponse))
+      })
     );
-    assert.strictEqual(onReadyMock.mock.callCount(), 1);
+
+    const httpsRequestMock = mock.method(https, 'request', () => ({
+      end: () => {},
+      on: () => {}
+    }));
+
+    await upload(token, file, overwrite);
+
+    assert.strictEqual(
+      httpsRequestMock.mock.calls[0].arguments[0],
+      uploadLinkResponse.href
+    );
+    assert.deepStrictEqual(httpsRequestMock.mock.calls[0].arguments[1], {
+      method: uploadLinkResponse.method
+    });
   });
 
-  test('should fire the onError callback in case of error', () => {
-    const error = new Error('error message');
-    const onErrorMock = mock.fn();
+  test('should reject when ya-disk API call fails', async () => {
+    mock.method(globalThis, 'fetch', () =>
+      Promise.resolve({
+        ok: false,
+        status: 401,
+        text: () =>
+          Promise.resolve(
+            JSON.stringify({
+              error: 'UnauthorizedError',
+              description: 'Not authorized'
+            })
+          )
+      })
+    );
 
-    upload(token, file, overwrite, undefined, onErrorMock);
-
-    linkMock._onErrorCallback(error);
-
-    assert.deepStrictEqual(onErrorMock.mock.calls[0].arguments[0], error);
+    await assert.rejects(upload(token, file, overwrite), {
+      name: 'UnauthorizedError',
+      message: 'Not authorized'
+    });
   });
 });
