@@ -32,7 +32,7 @@
     "husky": "9.1.7",
     "lint-staged": "17.6.0",
     "oxfmt": "0.70.0",
-    "oxlint": "1.85.0"
+    "oxlint": "1.90.0"
   },
   "scripts": {
     "build": "esbuild --bundle --platform=node --target=node22 --outfile=dist/index.cjs index.js",
